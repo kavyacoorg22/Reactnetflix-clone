@@ -14,9 +14,68 @@ const Login=()=>{
     setIsSignInForm(!isSignInForm)
   }
 
-  const checkValidation=()=>{
+  const checkValidation=async()=>{
    const message=checkFormvalidation(email.current.value ,password.current.value)
    setErrorMessage(message)
+   if(message) return;
+
+   if(!isSignInForm)
+   {
+    //sign up logic
+    
+     try{
+       const res=await fetch('/signup',
+        {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email.current.value,
+        password: password.current.value,
+      })
+       })
+        const data=await res.json()
+        if(res.ok)
+        {
+         alert("SignUp Successful")
+         setIsSignInForm(true)
+        }else{
+        setErrorMessage(data.message || "signup failed")
+        }
+     }catch(err)
+     {
+        setErrorMessage("Something went wrong")
+        console.log(err)
+     }
+    
+}else
+   {
+     //sign In logic
+       try{
+      const res=await fetch('/signin',{
+        method:"POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+        email: email.current.value,
+        password: password.current.value,
+      }),
+      })
+
+      const data=await res.json()
+      if(res.ok)
+      {
+        alert("SignIn Successfully")
+      }else
+      {
+        setErrorMessage(res.data ||"Login Failed")
+      }
+
+    }catch(err)
+    {
+      setErrorMessage("Something went wrong")
+      console.log(err)
+    }
+
+   }
    
   }
 return(
@@ -31,19 +90,11 @@ return(
 
 
     <div className="relative mb-6">
-   <input
-    type="text"
-    ref={email}
-    id="email"
-    placeholder=" "
-    required
-    className="peer h-12 w-full px-4 pt-6 pb-2 bg-white/10 text-white rounded border border-white/20 placeholder-transparent focus:outline-none focus:border-white focus:bg-white/20 transition-all"
+   <input type="text" ref={email} id="email" placeholder=" " required 
+   className="peer h-12 w-full px-4 pt-6 pb-2 bg-white/10 text-white rounded border border-white/20 placeholder-transparent focus:outline-none focus:border-white focus:bg-white/20 transition-all"
   />
-  <label
-    htmlFor="email"
-    className="absolute left-4 top-2 text-xs text-gray-400 transition-all 
-      peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base
-      peer-focus:top-1 peer-focus:text-sm peer-focus:text-white"
+  <label htmlFor="email"
+    className="absolute left-4 top-2 text-xs text-gray-400 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:top-1 peer-focus:text-sm peer-focus:text-white"
   >
     Email or phone number
   </label>
@@ -51,16 +102,10 @@ return(
 
 
 <div className="relative mb-6">
-  <input
-    type="password"
-    id="password"
-    ref={password}
-    placeholder=" "
-    required
+  <input type="password" id="password" ref={password} placeholder=" " required
     className="peer h-12 w-full px-3 pt-5 pb-2 bg-white/10 text-white rounded border border-white/20 placeholder-transparent focus:outline-none focus:border-white focus:bg-white/20 transition-all"
   />
-  <label
-    htmlFor="password"
+  <label htmlFor="password"
     className="absolute left-3 top-2 text-sm text-gray-400 transition-all 
       peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base
       peer-focus:top-2 peer-focus:text-sm peer-focus:text-white"
@@ -87,7 +132,7 @@ return(
    )}
 
   <p className="text-sm text-gray-400">{isSignInForm?"New to Netflix?":"Already have Account?"}
-<span className="text-white hover:underline cursor-pointer" onClick={toggleSignInForm}>{isSignInForm?"Sign up now":" Sign In now"}</span>
+  <span className="text-white hover:underline cursor-pointer" onClick={toggleSignInForm}>{isSignInForm?"Sign up now":" Sign In now"}</span>
   </p>
 </form>
 
