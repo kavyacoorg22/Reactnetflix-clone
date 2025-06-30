@@ -1,88 +1,68 @@
- import {checkFormvalidation }from "../utils/validation";
+import { useAuth } from "../context/AuthContext"
+import { BG_IMG } from "../utils/constants";
+import {checkFormvalidation }from "../utils/validation";
 import Header from "./header";
  import {useState,useRef} from 'react'
-
+import { useNavigate } from "react-router-dom";
 
 const Login=()=>{
   const [isSignInForm,setIsSignInForm]=useState(true)
   const [errorMessage,setErrorMessage]=useState(true)
-
+  const navigate=useNavigate()
   const email=useRef(null);
   const password=useRef(null);
+  const { login } = useAuth()
 
   const toggleSignInForm=()=>{
     setIsSignInForm(!isSignInForm)
+    setErrorMessage("")
+    if (email.current) email.current.value = "";
+  if (password.current) password.current.value = "";
   }
 
-  const checkValidation=async()=>{
-   const message=checkFormvalidation(email.current.value ,password.current.value)
-   setErrorMessage(message)
-   if(message) return;
+const checkValidation = async () => {
+  const message = checkFormvalidation(email.current.value, password.current.value);
+  setErrorMessage(message);
+  if (message) return;
 
-   if(!isSignInForm)
-   {
-    //sign up logic
-    
-     try{
-       const res=await fetch('/signup',
-        {
+  const endpoint = isSignInForm ? "/signin" : "/signup";
+
+  try {
+    const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: email.current.value,
         password: password.current.value,
-      })
-       })
-        const data=await res.json()
-        if(res.ok)
-        {
-         alert("SignUp Successful")
-         setIsSignInForm(true)
-        }else{
-        setErrorMessage(data.message || "signup failed")
-        }
-     }catch(err)
-     {
-        setErrorMessage("Something went wrong")
-        console.log(err)
-     }
-    
-}else
-   {
-     //sign In logic
-       try{
-      const res=await fetch('/signin',{
-        method:"POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-        email: email.current.value,
-        password: password.current.value,
       }),
-      })
+    });
 
-      const data=await res.json()
-      if(res.ok)
-      {
-        alert("SignIn Successfully")
-      }else
-      {
-        setErrorMessage(res.data ||"Login Failed")
+    const data = await res.json();
+
+    if (res.ok) {
+      if (isSignInForm) {
+        login(data.token, email.current.value)
+        alert("SignIn Successfully");
+        navigate("/home"); //,{replace:true} This replaces the current history entry
+      } else {
+        alert("SignUp Successfully");
+        setIsSignInForm(true);
       }
-
-    }catch(err)
-    {
-      setErrorMessage("Something went wrong")
-      console.log(err)
+    } else {
+      setErrorMessage(data.message || (isSignInForm ? "Login Failed" : "Signup Failed"));
     }
-
-   }
-   
+  } catch (err) {
+    setErrorMessage("Something went wrong");
+    console.log(err);
   }
+};
+
+
 return(
   <div>
     <Header/>
     <div className="absolute">
-      <img src="https://assets.nflxext.com/ffe/siteui/vlv3/75b0ed49-75ab-4a63-bd45-37bc2c95cb73/web/IN-en-20250623-TRIFECTA-perspective_ae5833b7-6ce5-4e88-853e-014f38c506f1_large.jpg" alt="" />
+      <img src={BG_IMG} alt="" />
     </div>
    
     <form onSubmit={(e)=>e.preventDefault()} className="absolute w-4/12 bg-black/70 p-12 my-40 mx-auto right-0 left-0 rounded text-white">
