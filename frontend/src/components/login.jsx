@@ -2,7 +2,7 @@ import { useAuth } from "../context/AuthContext"
 import { BG_IMG } from "../utils/constants";
 import {checkFormvalidation }from "../utils/validation";
 import Header from "./header";
- import {useState,useRef} from 'react'
+ import {useState,useRef,useEffect} from 'react'
 import { useNavigate } from "react-router-dom";
 
 const Login=()=>{
@@ -11,7 +11,14 @@ const Login=()=>{
   const navigate=useNavigate()
   const email=useRef(null);
   const password=useRef(null);
-  const { login } = useAuth()
+  const { login ,auth} = useAuth()
+
+  useEffect(() => {
+  if (auth?.user) {
+    navigate("/home", { replace: true });
+  }
+}, [auth, navigate]);
+
 
   const toggleSignInForm=()=>{
     setIsSignInForm(!isSignInForm)
@@ -43,7 +50,7 @@ const checkValidation = async () => {
       if (isSignInForm) {
         login(data.token, email.current.value)
         alert("SignIn Successfully");
-        navigate("/home"); //,{replace:true} This replaces the current history entry
+        navigate("/home",{replace:true}); //,{replace:true} This replaces the current history entry
       } else {
         alert("SignUp Successfully");
         setIsSignInForm(true);
