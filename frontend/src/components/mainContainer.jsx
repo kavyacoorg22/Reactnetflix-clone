@@ -2,14 +2,15 @@ import { BG_POSTER } from "../utils/constants";
 import { POSTER_TITLE } from "../utils/constants";
 import BackgroundVideo from "./backgroundVideo";
 import playButton from '../assets/playButton.svg';
-
+import { useState } from "react";
 const MainContainer=()=>{
 
   return(
   <div>
   <div className="relative w-screen aspect-video bg-gradient-to-r">
   
-  {/* <img src={BG_POSTER} alt="Background Poster" className="w-full h-full object-cover"/> */}
+{/* 
+  <img src={BG_POSTER} alt="Background Poster" className="w-full h-full object-cover"/> */}
 
     <BackgroundVideo/> 
   <img src={POSTER_TITLE} alt="Poster Title" className="absolute top-28 left-14 w-[35%] z-10"/>

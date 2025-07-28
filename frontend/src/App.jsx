@@ -1,5 +1,5 @@
 import Login from './components/login' 
-import{ useState} from 'react'
+import{ useCallback, useState,lazy,Suspense} from 'react'
 import {createBrowserRouter,RouterProvider} from 'react-router-dom'
 import Home from '../src/components/home'
 import VideoPlayer from './components/videoPlayer'
@@ -31,6 +31,10 @@ const App=()=>{
    </div>
 
   )
+
+
+
+
 }
 
 export default App;

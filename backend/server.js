@@ -11,9 +11,7 @@ const jwt=require("jsonwebtoken")
 app.use(cors());
 app.use(express.json())
 
-app.get('/',(req,res)=>{
-  res.send("server running...........")
-})
+
 //signup
 app.post("/signup", async (req, res) => {
   const { email, password } = req.body;
